@@ -29,12 +29,6 @@ make build
 cp ./tsm /usr/local/bin/tsm
 ```
 
-### bpkg
-
-```bash
-bpkg install Yukaii/tsm -g
-```
-
 ## Usage
 
 ```text
