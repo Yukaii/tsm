@@ -1,0 +1,15 @@
+class Tsm < Formula
+  desc "Tmux Session Manager"
+  homepage "https://github.com/Yukaii/tsm"
+  url "https://github.com/Yukaii/tsm/releases/download/__VERSION__/tsm-__VERSION__.tar.gz"
+  sha256 "__SHA256__"
+  license "MIT"
+
+  def install
+    bin.install "tsm"
+  end
+
+  test do
+    system "#{bin}/tsm", "help"
+  end
+end
