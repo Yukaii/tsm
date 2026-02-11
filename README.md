@@ -8,6 +8,13 @@
 
 ## Highlights
 
+### Basic session switcher (`tsm list` + `tsm kill`)
+
+Quickly list and manage top-level tmux sessions.
+
+- `tsm list`
+- `tsm kill <session>`
+
 ### Popup session (`tsm popup`)
 
 Open or reuse a floating tmux session tied to the current session/window.
@@ -78,6 +85,9 @@ bind-key ")" run-shell -b "tsm panel toggle --direction right"
 bind-key w run-shell 'cd "#{pane_current_path}" && tsm worktree'
 bind-key N run-shell 'cd "#{pane_current_path}" && tsm worktree next'
 bind-key P run-shell 'cd "#{pane_current_path}" && tsm worktree prev'
+
+# optional: simple session switcher using fzf
+bind-key r run-shell "echo $(tsm list | fzf-tmux -p 55%,60% --bind 'enter:execute(tmux switch-client -t {})+abort') > /dev/null"
 ```
 
 ## Ghostty config example
