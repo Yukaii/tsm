@@ -41,13 +41,20 @@ Interactive picker for existing worktrees and branch-based worktree creation.
 
 ## Screencasts
 
-<!-- MARK: popup-screencast -->
+https://github.com/user-attachments/assets/fff13e31-5b20-434b-9e34-33f9d08cd60e
+
 Popup workflow (`docs/screencasts/tsm_popup.mp4`)
 
-<!-- MARK: bottom-panel-screencast -->
+
+
+https://github.com/user-attachments/assets/73c20f45-4d63-4c15-a388-c180c3c41642
+
 Bottom panel workflow (`docs/screencasts/tsm_bottom_panel.mp4`)
 
-<!-- MARK: side-panel-screencast -->
+
+
+https://github.com/user-attachments/assets/53bb648e-2107-45b4-ba2e-1a2059b91bb6
+
 Side panel workflow (`docs/screencasts/tsm_side_panel.mp4`)
 
 ## Install
