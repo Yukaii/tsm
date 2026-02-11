@@ -39,6 +39,17 @@ Interactive picker for existing worktrees and branch-based worktree creation.
 - `tsm worktree next`
 - `tsm worktree prev`
 
+## Screencasts
+
+<!-- MARK: popup-screencast -->
+Popup workflow (`docs/screencasts/tsm_popup.mp4`)
+
+<!-- MARK: bottom-panel-screencast -->
+Bottom panel workflow (`docs/screencasts/tsm_bottom_panel.mp4`)
+
+<!-- MARK: side-panel-screencast -->
+Side panel workflow (`docs/screencasts/tsm_side_panel.mp4`)
+
 ## Install
 
 ### Homebrew (tap)
