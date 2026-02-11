@@ -82,22 +82,35 @@ bind-key P run-shell 'cd "#{pane_current_path}" && tsm worktree prev'
 
 ## Ghostty config example
 
-Example Ghostty keybinds that send your tmux prefix (`C-q`, `\x11`) followed by the tsm-bound tmux keys:
+Example Ghostty keybinds that send your tmux prefix bytes followed by the tsm-bound tmux keys.
 
 ```ini
-# tsm popup (tmux key: ')
-keybind = ctrl+apostrophe=text:\x11'
+# Prefix bytes reference:
+# C-q => \x11
+# C-b => \x02
+# C-a => \x01
 
-# tsm panel bottom (tmux key: b)
-keybind = ctrl+grave_accent=text:\x11b
+# Example: C-q prefix (custom)
+keybind = ctrl+apostrophe=text:\x11'         # tsm popup
+keybind = ctrl+grave_accent=text:\x11b       # panel bottom
+keybind = ctrl+alt+w=text:\x11w              # worktree picker
+keybind = ctrl+alt+shift+n=text:\x11N        # worktree next
+keybind = ctrl+alt+shift+p=text:\x11P        # worktree prev
 
-# tsm worktree picker/next/prev (tmux keys: w, N, P)
-keybind = ctrl+alt+w=text:\x11w
-keybind = ctrl+alt+shift+n=text:\x11N
-keybind = ctrl+alt+shift+p=text:\x11P
+# Example: C-b prefix (default tmux)
+keybind = ctrl+apostrophe=text:\x02'
+keybind = ctrl+grave_accent=text:\x02b
+keybind = ctrl+alt+w=text:\x02w
+keybind = ctrl+alt+shift+n=text:\x02N
+keybind = ctrl+alt+shift+p=text:\x02P
+
+# Example: C-a prefix (common alternative)
+keybind = ctrl+apostrophe=text:\x01'
+keybind = ctrl+grave_accent=text:\x01b
+keybind = ctrl+alt+w=text:\x01w
+keybind = ctrl+alt+shift+n=text:\x01N
+keybind = ctrl+alt+shift+p=text:\x01P
 ```
-
-Adjust these if your tmux prefix is not `C-q`.
 
 ## Development
 
