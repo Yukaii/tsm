@@ -14,6 +14,13 @@ jobs:
       - uses: actions/checkout@v4
       - name: Build release artifacts
         run: make release-dist VERSION=${GITHUB_REF_NAME}
+      - name: Upload release artifacts for downstream jobs
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-dist
+          path: |
+            dist/tsm-${{ github.ref_name }}.tar.gz
+            dist/tsm-${{ github.ref_name }}.tar.gz.sha256
       - name: Publish GitHub release
         uses: softprops/action-gh-release@v2
         with:
@@ -43,9 +50,12 @@ jobs:
       - uses: actions/checkout@v4
         if: ${{ steps.gate.outputs.enabled == 'true' }}
 
-      - name: Build release artifacts
+      - name: Download release artifacts
         if: ${{ steps.gate.outputs.enabled == 'true' }}
-        run: make release-dist VERSION=${GITHUB_REF_NAME}
+        uses: actions/download-artifact@v4
+        with:
+          name: release-dist
+          path: dist
 
       - name: Setup SSH deploy key
         if: ${{ steps.gate.outputs.enabled == 'true' }}
