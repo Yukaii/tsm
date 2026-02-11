@@ -30,14 +30,14 @@ jobs:
       pull-requests: write
       issues: write
     steps:
-      - name: Check Homebrew tap deploy key
+      - name: Check Homebrew automation secrets
         id: gate
         run: |
-          if [ -n "${{ secrets.HOMEBREW_TAP_DEPLOY_KEY }}" ]; then
+          if [ -n "${{ secrets.HOMEBREW_TAP_DEPLOY_KEY }}" ] && [ -n "${{ vars.APP_ID }}" ] && [ -n "${{ secrets.APP_PRIVATE_KEY }}" ]; then
             echo "enabled=true" >> "$GITHUB_OUTPUT"
           else
             echo "enabled=false" >> "$GITHUB_OUTPUT"
-            echo "HOMEBREW_TAP_DEPLOY_KEY is not set. Skipping homebrew-pr job."
+            echo "HOMEBREW_TAP_DEPLOY_KEY, APP_ID, or APP_PRIVATE_KEY is not set. Skipping homebrew-pr job."
           fi
 
       - uses: actions/checkout@v4
@@ -61,6 +61,19 @@ jobs:
         if: ${{ steps.gate.outputs.enabled == 'true' }}
         run: git clone git@github.com:Yukaii/homebrew-tap.git homebrew-tap
 
+      - name: Create GitHub App installation token
+        id: app-token
+        if: ${{ steps.gate.outputs.enabled == 'true' }}
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ vars.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+          owner: Yukaii
+          repositories: homebrew-tap
+          permission-contents: write
+          permission-pull-requests: write
+          permission-issues: write
+
       - name: Update formula
         if: ${{ steps.gate.outputs.enabled == 'true' }}
         env:
@@ -73,7 +86,7 @@ jobs:
       - name: Commit, push, and open PR via gh
         if: ${{ steps.gate.outputs.enabled == 'true' }}
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
           VERSION: ${{ github.ref_name }}
         run: |
           set -euo pipefail

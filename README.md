@@ -139,13 +139,16 @@ One-time setup:
 
 - add repository secret `HOMEBREW_TAP_DEPLOY_KEY` in `Yukaii/tsm`
 - use a write-enabled deploy key attached to `Yukaii/homebrew-tap` (SSH private key in the secret)
-- workflow uses `GITHUB_TOKEN` (`github.token`) with permissions for `contents`, `pull-requests`, and `issues`
+- create a GitHub App with `contents`, `pull_requests`, and `issues` write permissions
+- install that app on `Yukaii/homebrew-tap`
+- add repository variable `APP_ID` in `Yukaii/tsm` (GitHub App ID)
+- add repository secret `APP_PRIVATE_KEY` in `Yukaii/tsm` (GitHub App private key PEM)
 
-If `HOMEBREW_TAP_DEPLOY_KEY` is missing, release publishing still works, and only the tap PR job is skipped.
+If any of `HOMEBREW_TAP_DEPLOY_KEY`, `APP_ID`, or `APP_PRIVATE_KEY` are missing, release
+publishing still works, and only the tap PR job is skipped.
 
-Note: `GITHUB_TOKEN` permissions are scoped by GitHub settings. If cross-repo PR API access to
-`Yukaii/homebrew-tap` is blocked for `Yukaii/tsm` workflows, you still need a dedicated token or
-GitHub App token for PR creation.
+The workflow mints a short-lived GitHub App installation token via
+`actions/create-github-app-token`, then uses `gh` with that token to create/update the tap PR.
 
 Manual fallback:
 
