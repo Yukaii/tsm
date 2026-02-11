@@ -21,3 +21,80 @@ jobs:
             dist/tsm-${{ github.ref_name }}.tar.gz
             dist/tsm-${{ github.ref_name }}.tar.gz.sha256
           generate_release_notes: true
+
+  homebrew-pr:
+    needs: release
+    runs-on: ubuntu-latest
+    if: ${{ secrets.HOMEBREW_TAP_DEPLOY_KEY != '' }}
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build release artifacts
+        run: make release-dist VERSION=${GITHUB_REF_NAME}
+
+      - name: Setup SSH deploy key
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          echo "${{ secrets.HOMEBREW_TAP_DEPLOY_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+
+      - name: Clone tap repository
+        run: git clone git@github.com:Yukaii/homebrew-tap.git homebrew-tap
+
+      - name: Update formula
+        env:
+          VERSION: ${{ github.ref_name }}
+        run: |
+          SHA=$(cut -d' ' -f1 "dist/tsm-${VERSION}.tar.gz.sha256")
+          ./scripts/generate-homebrew-formula.sh "$VERSION" "$SHA" > homebrew-tap/Formula/tsm.rb
+          ruby -c homebrew-tap/Formula/tsm.rb
+
+      - name: Commit, push, and open PR via gh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          BRANCH="codex/release-tsm-${VERSION}"
+          cd homebrew-tap
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git checkout -B "$BRANCH"
+
+          if git diff --quiet -- Formula/tsm.rb; then
+            echo "No formula changes detected; skipping PR."
+            exit 0
+          fi
+
+          git add Formula/tsm.rb
+          git commit -m "build(homebrew): bump tsm to ${VERSION}"
+          git push -u origin "$BRANCH" --force-with-lease
+
+          PR_NUMBER="$(gh pr list --repo Yukaii/homebrew-tap --head "$BRANCH" --state open --json number --jq '.[0].number // empty')"
+          if [ -n "$PR_NUMBER" ]; then
+            gh pr edit "$PR_NUMBER" --repo Yukaii/homebrew-tap \
+              --title "build(homebrew): bump tsm to ${VERSION}" \
+              --body "Automated update from https://github.com/${GITHUB_REPOSITORY}/releases/tag/${VERSION}.
+
+          - updates \`Formula/tsm.rb\`
+          - refreshes source URL and SHA256 for \`${VERSION}\`"
+            echo "Updated existing PR #$PR_NUMBER"
+          else
+            gh pr create --repo Yukaii/homebrew-tap \
+              --base main \
+              --head "$BRANCH" \
+              --title "build(homebrew): bump tsm to ${VERSION}" \
+              --body "Automated update from https://github.com/${GITHUB_REPOSITORY}/releases/tag/${VERSION}.
+
+          - updates \`Formula/tsm.rb\`
+          - refreshes source URL and SHA256 for \`${VERSION}\`"
+          fi

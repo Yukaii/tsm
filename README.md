@@ -133,16 +133,32 @@ git push origin v0.1.0
 
 `/Users/yukai/Projects/Personal/tsm/.github/workflows/release.yml` publishes those files to GitHub Releases.
 
-### 3. Update Homebrew formula
+### 3. Homebrew tap PR automation
 
-Get SHA from the generated checksum file, then render formula:
+`/Users/yukai/Projects/Personal/tsm/.github/workflows/release.yml` now includes a `homebrew-pr` job that:
+
+- rebuilds release artifacts for the tag
+- regenerates `Formula/tsm.rb`
+- opens/updates a PR in `Yukaii/homebrew-tap`
+
+One-time setup:
+
+- add repository secret `HOMEBREW_TAP_DEPLOY_KEY` in `Yukaii/tsm`
+- use a write-enabled deploy key attached to `Yukaii/homebrew-tap` (SSH private key in the secret)
+- workflow uses `GITHUB_TOKEN` (`github.token`) with permissions for `contents`, `pull-requests`, and `issues`
+
+If `HOMEBREW_TAP_DEPLOY_KEY` is missing, release publishing still works, and only the tap PR job is skipped.
+
+Note: `GITHUB_TOKEN` permissions are scoped by GitHub settings. If cross-repo PR API access to
+`Yukaii/homebrew-tap` is blocked for `Yukaii/tsm` workflows, you still need a dedicated token or
+GitHub App token for PR creation.
+
+Manual fallback:
 
 ```bash
 SHA=$(cut -d' ' -f1 dist/tsm-v0.1.0.tar.gz.sha256)
 ./scripts/generate-homebrew-formula.sh v0.1.0 "$SHA"
 ```
-
-Use the output to update your tap formula (`tsm.rb`) and push it to your Homebrew tap repository.
 
 ## Requirements
 
