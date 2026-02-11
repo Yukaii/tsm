@@ -6,6 +6,7 @@ build:
 	./scripts/build.sh ./tsm
 
 lint:
+	./scripts/build.sh ./tsm
 	bash -n ./tsm
 
 test: build test-integration
@@ -21,4 +22,4 @@ release-dist: build
 	./scripts/release-dist.sh $(VERSION)
 
 clean:
-	rm -rf ./dist
+	rm -rf ./dist ./tsm

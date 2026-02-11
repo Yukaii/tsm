@@ -2,6 +2,7 @@
 get_unique_sessions() {
     tmux list-sessions -F '#{session_name}' \
       | grep -v '^popout_' \
+      | grep -v '^__tsm_panel_store_' \
       | sed 's/^floating_//; s/_[0-9]*$//' \
       | sort -u
 }
@@ -10,6 +11,7 @@ get_sessions_for_base() {
     base_name="$1"
     tmux list-sessions -F '#{session_name}' \
       | grep -v '^popout_' \
+      | grep -v '^__tsm_panel_store_' \
       | grep -E "^(floating_${base_name}_[0-9]*)|(${base_name})$"
 }
 
