@@ -132,7 +132,7 @@ git push origin v0.1.0
 `/Users/yukai/Projects/Personal/tsm/.github/workflows/release.yml` now includes a `homebrew-pr` job that:
 
 - rebuilds release artifacts for the tag
-- regenerates `Formula/tsm.rb`
+- updates only `url` and `sha256` in `Formula/tsm.rb`
 - opens/updates a PR in `Yukaii/homebrew-tap`
 
 One-time setup:
@@ -154,7 +154,7 @@ Manual fallback:
 
 ```bash
 SHA=$(cut -d' ' -f1 dist/tsm-v0.1.0.tar.gz.sha256)
-./scripts/generate-homebrew-formula.sh v0.1.0 "$SHA"
+./scripts/update-homebrew-formula.sh /path/to/homebrew-tap/Formula/tsm.rb v0.1.0 "$SHA"
 ```
 
 ## Requirements
