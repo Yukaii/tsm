@@ -33,6 +33,12 @@ Toggle a panel without losing process state.
 - `tsm panel toggle --direction left`
 - `tsm panel toggle --direction right`
 
+### Move window (`tsm move-window`)
+
+Move the current window to another session with an interactive picker.
+
+- `tsm move-window`
+
 ### Worktree switch/create (`tsm worktree`)
 
 Interactive picker for existing worktrees and branch-based worktree creation.
@@ -86,6 +92,7 @@ Commands:
   kill <session>
   popup [command]
   panel toggle [--direction <bottom|left|right>]
+  move-window
   worktree|wt
   help [command]
 ```
@@ -114,6 +121,19 @@ bind-key r run-shell "echo $(tsm list | fzf-tmux -p 55%,60% \
   --bind 'enter:execute(tmux switch-client -t {})+abort'\
   --bind 'ctrl-x:execute(tsm kill {})+reload(tsm list)'\
 ) > /dev/null"
+
+### Move window to another session (`tsm move-window`)
+
+Move the current window to another session with an interactive fzf picker.
+
+- `tsm move-window`
+
+#### tmux binding
+
+```tmux
+# move current window to another session
+bind-key M run-shell "tsm move-window"
+```
 
 # smart popup toggle (auto-detach if already in floating session)
 bind "'" if-shell "[[ $(tmux display-message -p '#S') = floating* ]]" {

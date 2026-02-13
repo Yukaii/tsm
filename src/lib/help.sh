@@ -1,8 +1,8 @@
 display_help() {
-    local command="$1"
-    case "$command" in
-        "")
-            cat << EOF
+  local command="$1"
+  case "$command" in
+  "")
+    cat <<EOF
 Usage: tsm <command> [options]
 
 Tmux Session Manager (tsm) - Manage tmux sessions efficiently
@@ -12,14 +12,15 @@ Commands:
   kill <session>      Kill all sessions with the given base name
   popup [command]     Create or attach to a floating popup session
   panel               Toggle persistent panel (supports direction)
+  move-window         Move current window to another session (fzf picker)
   worktree|wt         Manage git worktrees for the current repo
   help [command]      Display help information for tsm or a specific command
 
 Use "tsm help <command>" for more information about a specific command.
 EOF
-            ;;
-        "list")
-            cat << EOF
+    ;;
+  "list")
+    cat <<EOF
 Usage: tsm list
 
 List all unique tmux session names.
@@ -30,9 +31,9 @@ This command displays a list of all unique session names, removing any
 Example:
   $ tsm list
 EOF
-            ;;
-        "kill")
-            cat << EOF
+    ;;
+  "kill")
+    cat <<EOF
 Usage: tsm kill <session_name>
 
 Kill all tmux sessions with the given base name.
@@ -46,9 +47,9 @@ Arguments:
 Example:
   $ tsm kill mysession
 EOF
-            ;;
-        "popup")
-            cat << EOF
+    ;;
+  "popup")
+    cat <<EOF
 Usage: tsm popup [command]
 
 Create or attach to a floating popup tmux session.
@@ -65,9 +66,9 @@ Examples:
   $ tsm popup
   $ tsm popup "vim myfile.txt"
 EOF
-            ;;
-        "worktree")
-            cat << EOF
+    ;;
+  "worktree")
+    cat <<EOF
 Usage: tsm worktree [--all]
        tsm worktree list [--all]
        tsm worktree next
@@ -93,9 +94,9 @@ Commands:
 Options:
   --all               Include all tracked worktrees under ${WORKTREE_ROOT}
 EOF
-            ;;
-        "panel")
-            cat << EOF
+    ;;
+  "panel")
+    cat <<EOF
 Usage: tsm panel toggle [--direction <bottom|left|right>]
 
 Toggle a persistent tmux panel for the current tmux session.
@@ -113,10 +114,24 @@ Examples:
   $ tsm panel toggle --direction left
   $ tsm panel toggle -d right
 EOF
-            ;;
-        *)
-            echo "Error: Unknown command '$command'. Use 'tsm help' for general usage information."
-            exit 1
-            ;;
-    esac
+    ;;
+  "move-window")
+    cat <<EOF
+Usage: tsm move-window
+
+Move the current tmux window to another session using an interactive fzf picker.
+
+This command displays all available sessions (excluding the current one) in a
+fuzzy finder. Select a target session and the current window will be moved there.
+Press Esc to cancel without moving.
+
+Example:
+  $ tsm move-window
+EOF
+    ;;
+  *)
+    echo "Error: Unknown command '$command'. Use 'tsm help' for general usage information."
+    exit 1
+    ;;
+  esac
 }
