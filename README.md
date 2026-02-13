@@ -1,6 +1,8 @@
 # tsm
 
-`tsm` is a tmux-first workflow tool focused on three fast actions:
+`tsm` is a tmux-first workflow tool that serves as a **tmux-native replacement for ToggleTerm** and other Neovim/Vim floating terminal plugins. It brings the popup/panel workflow directly to tmux, making it editor-agnostic and available in any tmux session.
+
+Focused on three fast actions:
 
 - popup session attach/create
 - persistent paneling (bottom/left/right)
@@ -104,8 +106,55 @@ bind-key w run-shell 'cd "#{pane_current_path}" && tsm worktree'
 bind-key N run-shell 'cd "#{pane_current_path}" && tsm worktree next'
 bind-key P run-shell 'cd "#{pane_current_path}" && tsm worktree prev'
 
-# optional: simple session switcher using fzf
-bind-key r run-shell "echo $(tsm list | fzf-tmux -p 55%,60% --bind 'enter:execute(tmux switch-client -t {})+abort') > /dev/null"
+# session switcher with kill support
+bind-key r run-shell "echo $(tsm list | fzf-tmux -p 55%,60% \
+  --no-sort --border-label ' Tmux session manager ' \
+  --prompt '🔗  ' \
+  --header '  Enter to attach to session, ^x to kill, Esc to cancel' \
+  --bind 'enter:execute(tmux switch-client -t {})+abort'\
+  --bind 'ctrl-x:execute(tsm kill {})+reload(tsm list)'\
+) > /dev/null"
+
+# smart popup toggle (auto-detach if already in floating session)
+bind "'" if-shell "[[ $(tmux display-message -p '#S') = floating* ]]" {
+    detach-client
+} {
+  run-shell "tsm popup"
+}
+```
+
+## Editor integration examples
+
+### Neovim (init.lua)
+
+```lua
+-- TSM popup keymaps
+vim.keymap.set('n', '<leader>tl', ':silent !tsm popup lazygit<CR>', { desc = 'Lazygit popup' })
+vim.keymap.set('n', '<leader>tf', ':silent !tsm popup<CR>', { desc = 'Terminal popup' })
+vim.keymap.set('n', '<leader>tj', ':silent !tsm popup lazyjj<CR>', { desc = 'Lazyjj popup' })
+vim.keymap.set('n', '<leader>tr', ':silent !tsm popup serpl<CR>', { desc = 'Serpl popup' })
+```
+
+### Helix (config.toml)
+
+```toml
+[keys.normal]
+# TSM popup shortcuts
+"," = { l = ":sh tsm popup lazygit", f = ":sh tsm popup", j = ":sh tsm popup lazyjj", r = ":sh tsm popup serpl" }
+```
+
+### Kakoune (kakrc)
+
+```kak
+# TSM popup commands
+define-command -hidden tsm-popup-git %{
+    (tsm popup lazygit &) >/dev/null 2>/dev/null
+}
+define-command -hidden tsm-popup-terminal %{
+    (tsm popup &) >/dev/null 2>/dev/null
+}
+map global user g ': tsm-popup-git<ret>' -docstring 'Open lazygit in popup'
+map global user f ': tsm-popup-terminal<ret>' -docstring 'Open terminal popup'
 ```
 
 ## Ghostty config example
